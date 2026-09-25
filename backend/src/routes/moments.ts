@@ -1,7 +1,7 @@
 import { Router, type Request, type Response } from "express";
 import multer from "multer";
 import { prisma } from "../lib/prisma";
-import { generateMockPolaroid, getMockTitle } from "../services/ai/generate";
+import { generatePolaroid , getMockTitle } from "../services/ai/generate";
 import { type MomentPromptInput, type Passion } from "../services/ai/promptBuilder";
 import {
   getMomentOutputUrl,
@@ -85,7 +85,7 @@ async function processMoment(momentId: string, input: ValidatedInput, photo?: Ex
       await prisma.moment.update({ where: { id: momentId }, data: { photoPath } });
     }
 
-    const generated = await generateMockPolaroid(input);
+    const generated = await generatePolaroid(input);
     const output = await uploadMomentOutput(momentId, generated.buffer, generated.contentType);
     await prisma.moment.update({
       where: { id: momentId },
