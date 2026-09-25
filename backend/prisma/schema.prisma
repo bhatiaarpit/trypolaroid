@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  provider   String
+  providerId String
+  createdAt  DateTime @default(now())
+
+  moments Moment[]
+
+  @@index([providerId])
+}
+
+model Moment {
+  id     String  @id @default(cuid())
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  passionCategory String
+  preferences     String[]
+  preferencesText String?
+  selfPrompt      String
+  photoPath       String?  @map("photoUrl")
+  outputUrl       String?
+  outputPath      String?
+  status          String   @default("pending")
+  createdAt       DateTime @default(now())
+
+  shareEvents ShareEvent[]
+
+  @@index([userId])
+}
+
+model ShareEvent {
+  id       String @id @default(cuid())
+  momentId String
+  moment   Moment @relation(fields: [momentId], references: [id])
+  platform String
+  createdAt DateTime @default(now())
+
+  @@index([momentId])
+}
